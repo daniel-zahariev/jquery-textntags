@@ -38,9 +38,6 @@
         syntax          : _.template('@[[<%= id %>:<%= type %>:<%= title %>]]'),
         parser          : /(@)\[\[(\d+):([\w\s\.\-]+):([\w\s@\.,-\/#!$%\^&\*;:{}=\-_`~()]+)\]\]/gi,
         parserGroups    : {id: 2, type: 3, title: 4},
-        // syntax          : _.template('@[<%= title %>](<%= type %>:<%= id %>)'),
-        // parser          : /(@)\[([\w\s]+)\]\(([\w\s]+):(\d+)\)/gi,
-        // parserGroups    : {id: 4, type: 3, title: 2},
         classes         : {
             tagsDropDown      : '',
             tagActiveDropDown : 'active',
@@ -143,6 +140,11 @@
             tagsCollection = initialState.tagsCollection;
             elEditor.val(initialState.plain_text);
             updateBeautifier();
+            
+            if (tagsCollection.length > 0) {
+                var addedTags = _.uniq(_.map(tagsCollection, function (tagPos) { return tagPos[3]; }));
+                elEditor.trigger('tagsAdded.textntags', [addedTags]);
+            }
         }
         
         function getEditorValue () {
@@ -486,7 +488,13 @@
                 }
             },
             val : function (callback) {
-                if (!_.isFunction(callback)) {
+                if (_.isString(callback)) {
+                    var removedTags = _.uniq(_.map(tagsCollection, function (tagPos) { return tagPos[3]; }));
+                    elEditor.trigger('tagsRemoved.textntags', [removedTags]);
+                    elEditor.val(callback);
+                    initState();
+                    return;
+                } else if (!_.isFunction(callback)) {
                     return;
                 }
 
@@ -494,9 +502,11 @@
                 callback.call(this, value);
             },
             reset : function () {
+                var removedTags = _.uniq(_.map(tagsCollection, function (tagPos) { return tagPos[3]; }));
+                elEditor.trigger('tagsRemoved.textntags', [removedTags]);
                 elEditor.val('');
                 tagsCollection = [];
-                updateValues();
+                updateBeautifier();
             },
             getTags : function (callback) {
                 if (!_.isFunction(callback)) {
@@ -530,7 +540,7 @@
             var ms = methodOrSettings, instance = $.data(this, 'textntags') || $.data(this, 'textntags', new TextNTags(this));
 
             if (_.isFunction(instance[ms])) {
-                return instance[method].apply(this, Array.prototype.slice.call(outerArguments, 1));
+                return instance[ms].apply(this, Array.prototype.slice.call(outerArguments, 1));
             } else if (typeof ms === 'object' || !ms) {
                 return instance.init.call(this, ms);
             } else {

@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "Daniel Zahariev",
+        "img":"http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg",
+        "type":"contact"
+    },
+    {
+        "id": 2,
+        "name": "Petar Atanasov",
+        "img":"http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg",
+        "type":"contact"
+    },
+    {
+        "id": 3,
+        "name": "Dinko Tanev",
+        "img":"http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg",
+        "type":"contact"
+    }
+]
