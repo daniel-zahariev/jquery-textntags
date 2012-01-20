@@ -27,6 +27,8 @@
 
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://daniel-zahariev.github.com/jquery-textntags/" data-via="dzahar" data-lang="en">Tweet</a></p>
 
+
+<a class="anchor" name="examples"></a>
 <h2>Examples</h2>
 
 <p>Basic example (<a href="assets/example1.js">source</a>) - duplicate tags are allowed</p>
@@ -54,9 +56,13 @@
   <a class="button get-syntax-text3">Get marked-up value</a>
 </div>
 
+
+<a class="anchor" name="source"></a>
 <h2>Download and source</h2>
 <p>You can grab the latest source from the repository on GitHub by clicking here: <a href="https://github.com/daniel-zahariev/jquery-textntags">https://github.com/daniel-zahariev/jquery-textntags</a>.</p>
 
+
+<a class="anchor" name="startup"></a>
 <h2>Getting started</h2>
 
 <ol>
@@ -93,6 +99,7 @@ $('textarea.tagged_text').textntags({
   </li>
 </ol>
 
+<a class="anchor" name="configuration"></a>
 <h2>Configuration</h2>
 <p>jquery.textntags does have a number of extra configuration options which you may change to customise the way it behaves.</p>
 
@@ -132,6 +139,7 @@ $('textarea.tagged_text').textntags({
   </tr>
 </table>
 
+<a class="anchor" name="triggers"></a>
 <h3>Triggers</h3>
  
 <table>
@@ -199,6 +207,7 @@ $('textarea.tagged_text').textntags({
   </tr>
 </table>
 
+<a class="anchor" name="methods"></a>
 <h2>Methods</h2>
 
 <p>jquery.textntags does expose a number of public methods, you can call on an instance. </p>
@@ -301,8 +310,7 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 
 <a class="anchor" name="browser_support"></a>
 <h2>Browser support</h2>
-<p>jquery.textntags has been tested in Firefox 6+, Chrome 15+, and Internet Explorer 8+. </p>
-<p>Please let us know if you see anythin weired. And no, we will no make it work for older browsers. Period. </p>
+<p>jquery.textntags is still being tested for browser support.</p>
 
 
 <a class="anchor" name="dependencies"></a>
@@ -314,9 +322,6 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 <p>The component itself is implemented as a small independent function, so it can easily be ported to frameworks other than jQuery. </p>
 
 <p>Furthermore all utility functions have been centralized in the utils-object, which can be replaced with references if you already got functions like htmlEncode, etc. </p>
-
-<p>To make the component grow and shrink to fit it’s content, you can include <a href="http://www.unwrongest.com/projects/elastic">jquery.elastic.js</a> (which is totally optional)</p>
-
 
 <a class="anchor" name="license"></a>
 <h2>License</h2>
@@ -341,15 +346,15 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
 <script type="text/javascript">
-/*var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-27763738-1']);
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-28500014-1']);
 _gaq.push(['_trackPageview']);
 
 (function() {
   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();*/
+})();
 </script>
 
 </body>
