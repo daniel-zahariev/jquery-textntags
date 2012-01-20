@@ -108,6 +108,7 @@
         
         function initTextarea () {
             elEditor = $(editor).bind({
+                click:    onEditorClick,
                 keydown:  onEditorKeyDown,
                 keypress: onEditorKeyPress,
                 input:    onEditorInput,
@@ -233,34 +234,6 @@
             elEditor.css('height', elBeautifier.outerHeight() + 'px');
         }
         
-        function onEditorKeyPress (e) {
-            if (e.keyCode == KEY.RETURN) {
-                updateBeautifier(elEditor.val());
-            }
-        }
-        
-        function onEditorInput (e) {
-            if (editorSelectionLength > 0) {
-                // delete of selection occured
-                var sStart = elEditor[0].selectionStart,
-                    selectionLength = editorSelectionLength,
-                    sEnd = sStart + selectionLength,
-                    tags_shift_positions = elEditor.val().length - editorTextLength;
-                
-                removeTagsInRange(sStart, sEnd);
-                shiftTagsPosition(sEnd, tags_shift_positions);
-            } else if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
-                // char input - shift with 1
-                var sStart = elEditor[0].selectionStart;
-                shiftTagsPosition(sStart, 1);
-                removeTagsInRange(sStart, sStart + 1);
-            }
-            
-            updateBeautifier();
-            
-            checkForTrigger(1);
-        }
-        
         function checkForTrigger(look_ahead) {
             var sStart = elEditor[0].selectionStart,
                 look_ahead = look_ahead ? look_ahead : 0,
@@ -289,6 +262,10 @@
                 currentTriggerChar = found_trigger_char;
                 _.defer(_.bind(searchTags, this, currentDataQuery, found_trigger_char));
             }
+        }
+        
+        function onEditorClick (e) {
+            checkForTrigger(0);
         }
         
         function onEditorKeyDown (e) {
@@ -349,15 +326,43 @@
                 case keys.RIGHT:
                 case keys.HOME:
                 case keys.END:
-                    _.defer(function () { checkForTrigger.call(this) });
+                    _.defer(function () { checkForTrigger.call(this, 0); });
                     break;
             }
 
             return true;
         }
         
+        function onEditorKeyPress (e) {
+            if (e.keyCode == KEY.RETURN) {
+                updateBeautifier(elEditor.val());
+            }
+        }
+        
+        function onEditorInput (e) {
+            if (editorSelectionLength > 0) {
+                // delete of selection occured
+                var sStart = elEditor[0].selectionStart,
+                    selectionLength = editorSelectionLength,
+                    sEnd = sStart + selectionLength,
+                    tags_shift_positions = elEditor.val().length - editorTextLength;
+                
+                removeTagsInRange(sStart, sEnd);
+                shiftTagsPosition(sEnd, tags_shift_positions);
+            } else if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
+                // char input - shift with 1
+                var sStart = elEditor[0].selectionStart;
+                shiftTagsPosition(sStart, 1);
+                removeTagsInRange(sStart, sStart + 1);
+            }
+            
+            updateBeautifier();
+            
+            checkForTrigger(1);
+        }
+        
         function onEditorBlur (e) {
-            hideTagList();
+            _.delay(hideTagList, 100);
         }
         
         function hideTagList () {
