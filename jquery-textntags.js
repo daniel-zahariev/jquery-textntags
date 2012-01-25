@@ -340,20 +340,21 @@
         }
         
         function onEditorInput (e) {
-            if (editorSelectionLength > 0) {
-                // delete of selection occured
-                var sStart = elEditor[0].selectionStart,
-                    selectionLength = editorSelectionLength,
-                    sEnd = sStart + selectionLength,
-                    tags_shift_positions = elEditor.val().length - editorTextLength;
-                
-                removeTagsInRange(sStart, sEnd);
-                shiftTagsPosition(sEnd, tags_shift_positions);
-            } else if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
-                // char input - shift with 1
-                var sStart = elEditor[0].selectionStart;
-                shiftTagsPosition(sStart, 1);
-                removeTagsInRange(sStart, sStart + 1);
+            if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
+                if (editorSelectionLength > 0) {
+                    // delete of selection occured
+                    var sStart = elEditor[0].selectionStart,
+                        selectionLength = editorSelectionLength,
+                        sEnd = sStart + selectionLength,
+                        tags_shift_positions = elEditor.val().length - editorTextLength;
+                    removeTagsInRange(sStart, sEnd);
+                    shiftTagsPosition(sEnd, tags_shift_positions);
+                } else {
+                    // char input - shift with 1
+                    var sStart = elEditor[0].selectionStart;
+                    shiftTagsPosition(sStart, 1);
+                    removeTagsInRange(sStart, sStart + 1);
+                }
             }
             
             updateBeautifier();
