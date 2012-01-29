@@ -22,6 +22,7 @@
   resize: none;
   font-family: Arial;
   font-size: 13px;
+  line-height: 17px;
 
   -webkit-box-sizing: border-box;
      -moz-box-sizing: border-box;
@@ -112,11 +113,13 @@
   width: 100%;
   font-family: Arial;
   font-size: 13px;
+  line-height: 17px;
 }
 
 .textntags-wrapper .textntags-beautifier > div > strong {
   font-weight:normal;
   background: #d8dfea;
+  line-height: 16px;
 }
 
 .textntags-wrapper .textntags-beautifier > div > strong > span {

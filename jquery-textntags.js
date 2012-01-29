@@ -1,13 +1,9 @@
 /*
  * Text'N'Tags (textntags)
- * Version 1.0
+ * Version 0.1.1
  * Written by: Daniel Zahariev
- * Credit: 
- *      Most of the code structure is taken from Podio's
- *      Mentions Input jQuery plugin (http://podio.github.com/jquery-mentions-input/).
- *      However some of the core concepts are different.
  *
- * Using underscore.js
+ * Dependencies: jQuery, underscore.js
  *
  * License: MIT License - http://www.opensource.org/licenses/mit-license.php
  */
@@ -97,8 +93,10 @@
             }
             
             settings = $.extend(true, {}, defaultSettings, options);
+            delete settings.triggers[''];
             _.each(settings.triggers, function (val, key) {
                 settings.triggers[key] = $.extend(true, {}, trigger_defaults, val);
+                settings.triggers[key].finder = new RegExp(key + '\\w+(\\s+\\w+)?\\s?$', 'gi');
             });
             
             templates = settings.templates;
@@ -161,9 +159,9 @@
             });
             
             beautified_text = beautified_text.replace(/\n/g, '<br />&shy;');
-            beautified_text = beautified_text.replace(/ {2}/g, '&nbsp; ');
+            beautified_text = beautified_text.replace(/ {2}/g, '&nbsp; ') + '&shy;';
             
-            return beautified_text + '&shy;';
+            return beautified_text;
         }
         
         function getTaggedText() {
@@ -235,8 +233,9 @@
         }
         
         function checkForTrigger(look_ahead) {
+            look_ahead = look_ahead || 0;
+            
             var sStart = elEditor[0].selectionStart,
-                look_ahead = look_ahead ? look_ahead : 0,
                 left_text = elEditor.val().substr(0, sStart + look_ahead),
                 found_trigger, found_trigger_char = null, query;
             
@@ -245,11 +244,10 @@
             }
             
             found_trigger = _.find(settings.triggers, function (trigger, tchar) {
-                var tester = new RegExp(tchar + '\\w+(\\s+\\w+)?\\s?$', 'gi'),
-                    matches = left_text.match(tester);
+                var matches = left_text.match(trigger.finder);
                 if (matches) {
                     found_trigger_char = tchar;
-                    query = matches[0].substr(1);
+                    query = matches[0].substr(tchar.length);
                     return true;
                 }
                 return false;
@@ -340,20 +338,26 @@
         }
         
         function onEditorInput (e) {
-            if (editorSelectionLength > 0) {
-                // delete of selection occured
-                var sStart = elEditor[0].selectionStart,
-                    selectionLength = editorSelectionLength,
-                    sEnd = sStart + selectionLength,
-                    tags_shift_positions = elEditor.val().length - editorTextLength;
-                
-                removeTagsInRange(sStart, sEnd);
-                shiftTagsPosition(sEnd, tags_shift_positions);
-            } else if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
-                // char input - shift with 1
-                var sStart = elEditor[0].selectionStart;
-                shiftTagsPosition(sStart, 1);
-                removeTagsInRange(sStart, sStart + 1);
+            if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
+                if (editorSelectionLength > 0) {
+                    // delete of selection occured
+                    var sStart = elEditor[0].selectionStart,
+                        selectionLength = editorSelectionLength,
+                        sEnd = sStart + selectionLength,
+                        tags_shift_positions = elEditor.val().length - editorTextLength;
+                    removeTagsInRange(sStart, sEnd);
+                    shiftTagsPosition(sEnd, tags_shift_positions);
+                } else {
+                    // char input - shift with 1
+                    var sStart = elEditor[0].selectionStart;
+                    if (editorKeyCode == KEY.RETURN) {
+                        shiftTagsPosition(sStart - 1, 1);
+                        removeTagsInRange(sStart, sStart);
+                    } else {
+                        shiftTagsPosition(sStart, 1);
+                        removeTagsInRange(sStart, sStart + 1);
+                    }
+                }
             }
             
             updateBeautifier();

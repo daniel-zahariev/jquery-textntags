@@ -13,9 +13,10 @@ $(function () {
                 { id:3, name:'Dinko Tanev',     'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact' }
             ];
 
-            data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+            query = query.toLowerCase();
+            var found = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query) > -1; });
 
-            callback.call(this, data);
+            callback.call(this, found);
         }
     });
     

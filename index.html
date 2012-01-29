@@ -5,13 +5,52 @@
   <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
   <link href="https://fonts.googleapis.com/css?family=PT+Sans&subset=latin" rel="stylesheet" type="text/css">
-  <link href="assets/style.css" rel="stylesheet" type="text/css">
+  <link href="assets/style2.css" rel="stylesheet" type="text/css">
   <link href="jquery-textntags.css" rel="stylesheet" type="text/css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
   <script src="http://documentcloud.github.com/underscore/underscore-min.js" type="text/javascript"></script>
 </head>
 <body>
+
+<div id="sidebar" class="interface">
+    <a class="toc_title" href="#">
+      jquery.textntags <span class="version">(0.1.1)</span>
+    </a>
+    
+    <a class="toc_title" href="#">
+      Introduction
+    </a>
+	<ul class="toc_section">
+      <li>- <a href="#examples">Examples</a></li>
+      <li>- <a href="#source">Download and source</a></li>
+      <li>- <a href="#startup">Getting started</a></li>
+    </ul>
+	
+    <a class="toc_title" href="#configuration">
+      Documentation
+    </a>
+	<ul class="toc_section">
+      <li>- <a href="#configuration">Configuration</a></li>
+      <li>- <a href="#triggers">Triggers</a></li>
+      <li>- <a href="#methods">Methods</a></li>
+      <li>- <a href="#events">Events</a></li>
+      <li>- <a href="#query">Query data structure</a></li>
+      <li>- <a href="#markup">Markup format</a></li>
+      <li>- <a href="#browser_support">Browser support</a></li>
+      <li>- <a href="#dependencies">Dependencies</a></li>
+    </ul>
+	
+	
+    <a class="toc_title" href="#license">
+      License
+    </a>
+	
+    <a class="toc_title" href="#change_log">
+      Change Log
+    </a>
+    
+  </div>
 
 <div class="container">
 
@@ -23,7 +62,7 @@
 
 <p>This project is written by <a href="http://twitter.com/dzahar">Daniel Zahariev</a> and is open source to give it a life in the community. </p>
 
-<p>Credit for the most of the code structure: <a href="http://twitter.com/auchenberg">Kenneth Auchenberg</a>, and his <a href="http://podio.github.com/jquery-mentions-input/">Mentions Input</a> jQuery plugin</p>
+<p>Credit for the code skeleton: <a href="http://twitter.com/auchenberg">Kenneth Auchenberg</a>, and his <a href="http://podio.github.com/jquery-mentions-input/">Mentions Input</a> jQuery plugin</p>
 
 <p><a href="https://twitter.com/share" class="twitter-share-button" data-url="http://daniel-zahariev.github.com/jquery-textntags/" data-via="dzahar" data-lang="en">Tweet</a></p>
 
@@ -31,10 +70,10 @@
 <a class="anchor" name="examples"></a>
 <h2>Examples</h2>
 
-<p>Basic example (<a href="assets/example1.js">source</a>) - duplicate tags are allowed</p>
+<p>1. <b>Basic</b> example (<a href="assets/example1.js">source</a>) - duplicate tags are allowed</p>
 
 <div class="examples">
-  <textarea class="tagged_text_ex1" placeholder="Try to mention me, by typing @dan"></textarea>
+  <textarea class="tagged_text_ex1" placeholder="Try to tag me, by typing @dan"></textarea>
   <a class="button get-syntax-text">Get marked-up value</a>
   <a class="button get-tags">Get tags collection</a>
   <a class="button get-tags-map">Get tags map</a>
@@ -42,17 +81,25 @@
 </div>
 
 
-<p>AJAX example. (Getting data by AJAX, and filter in callback - <a href="assets/example2.js">source</a>)</p>
+<p>2. <b>AJAX</b> example. (Getting data by AJAX, and filter in callback - <a href="assets/example2.js">source</a>)</p>
 
 <div class="examples">
-  <textarea class="tagged_text_ex2" placeholder="Try to mention me, by typing @dan"></textarea>
+  <textarea class="tagged_text_ex2" placeholder="Try to tag me, by typing @dan"></textarea>
 </div>
 
 
-<p>Custom tags <a href="#markup">markup</a> example (<a href="assets/example3.js">source</a>)</p>
+<p>3. <b>Custom tags</b> <a href="#markup">markup</a> example (<a href="assets/example3.js">source</a>)</p>
 
 <div class="examples">
-  <textarea class="tagged_text_ex3" placeholder="Try to mention me, by typing @dan"></textarea>
+  <textarea class="tagged_text_ex3" placeholder="Try to tag me, by typing @dan"></textarea>
+  <a class="button get-syntax-text3">Get marked-up value</a>
+</div>
+
+
+<p>4. <b>Custom triggers</b> example (<a href="assets/example4.js">source</a>)</p>
+
+<div class="examples">
+  <textarea class="tagged_text_ex4" placeholder="Try to tag me, by typing !dan or #dan or PP:dan"></textarea>
   <a class="button get-syntax-text3">Get marked-up value</a>
 </div>
 
@@ -80,21 +127,18 @@
 $('textarea.tagged_text').textntags({
   onDataRequest: function (mode, query, triggerChar, callback) {
     var data = [
-      { id:1, name:'Daniel Zahariev', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg', 'type':'contact' },
-      { id:2, name:'Petar Atanasov', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg', 'type':'contact' },
-      { id:3, name:'Dinko Tanev', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact' }
+      { id:1, name:'Daniel Zahariev', 'img':'http://example.com/img1.jpg', 'type':'contact' },
+      { id:2, name:'Petar Atanasov', 'img':'http://example.com/img2.jpg', 'type':'contact' },
+      { id:3, name:'Dinko Tanev', 'img':'http://example.com/img3.jpg', 'type':'contact' }
     ];
 
-    data = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query.toLowerCase()) > -1 });
+    query = query.toLowerCase();
+    var found = _.filter(data, function(item) { return item.name.toLowerCase().indexOf(query) > -1; });
 
-   callback.call(this, data);
+   callback.call(this, found);
   }
 });
     </pre>
-    </p>
-
-    <p>
-      Yes! You are in business.
     </p>
   </li>
 </ol>
@@ -105,176 +149,166 @@ $('textarea.tagged_text').textntags({
 
 <p>The meaning of the options and their default values are listed below. </p>
 
-<table>
-  <tr>
-    <td><b>onDataRequest</b></td>
-    <td><tt>function(mode, query, triggerChar, callback)</tt></td>
-    <td class="definition">
-      This function is a callback function which is used to provide data for the autocomplete. When a search starts
-      this function is called with following arguments: 'search', the query (what's been typed), the trigger character, and a callback function which needs to be called inside onDataRequest with a data collection to be searched on as a first argument.
-    </td>
-  </tr>
-  <tr>
-    <td><b>realValOnSubmit</b></td>
-    <td><tt>true&nbsp;|&nbsp;false</tt></td>
-    <td class="definition">
-	  Wether to hooks to the submit event of the closest form and update the value of the textarea to the
-	  one with markup
-    </td>
-  </tr>
-  <tr>
-    <td><b>triggers</b></td>
-    <td><tt>object</tt></td>
-    <td class="definition">
-	  Key/value pairs which define all triggers. The keys are the characters for triggering (example: '@') suggestion list.
-	  The value is an options object which controls the behavior. The possible options are listed below.
-    </td>
-  </tr>
-  <tr>
-    <td><b>templates</b></td>
-    <td><tt>object</tt></td>
-    <td class="definition">
+<p>
+	<b class="header">onDataRequest</b> <tt>function(mode, query, triggerChar, callback)</tt> <br />
+	This function is a callback function which is used to provide data for the autocomplete. When a search starts
+    this function is called with following arguments: 'search', the query (what's been typed), the trigger character, 
+	and a callback function which needs to be called inside onDataRequest with a data collection to be searched on as a first argument.
+</p>
+<p>
+	<b class="header">realValOnSubmit</b> <tt>true | false</tt> <br />
+	Wether to hooks to the submit event of the closest form and update the value of the textarea to the
+	one with markup
+</p>
+<p>
+	<b class="header">triggers</b> <tt>object</tt> <br />
+	Key/value pairs which define all triggers. The keys are the characters for triggering (example: '@') suggestion list.
+	The value is an options object which controls the behavior. The possible options are listed <a href="#triggers">below</a>.
+</p>
+<p>
+	<b class="header">templates</b> <tt>object</tt> <br />
       Object which contains templates used to render the layout as key/value pairs.
-    </td>
-  </tr>
-</table>
+</p>
 
 <a class="anchor" name="triggers"></a>
-<h3>Triggers</h3>
+<h2>Triggers</h2>
  
-<table>
-  <tr>
-    <td><b>minChars</b></td>
-    <td><tt>int (2)</tt></td>
-    <td class="definition">
+<p>
+	<b class="header">minChars</b> <tt>int (2)</tt> <br />
       The minimum amount of characters after the trigger character necessary to perform a search.
-    </td>
-  </tr>
-  <tr>
-    <td><b>uniqueTags</b></td>
-    <td><tt>true&nbsp;|&nbsp;false</tt></td>
-    <td class="definition">
+</p>
+<p>
+	<b class="header">uniqueTags</b> <tt>true | false</tt> <br />
       Toggles whether or not to allow duplicate tags in the text.
-    </td>
-  </tr>
-  <tr>
-    <td><b>showImageOrIcon</b></td>
-    <td><tt>true&nbsp;|&nbsp;false</tt></td>
-    <td class="definition">
+</p>
+<p>
+	<b class="header">showImageOrIcon</b> <tt>true | false</tt> <br />
       Toggles whether or not items within the autocomplete-dropdown will be rendered with an image/icon.
-    </td>
-  </tr>
-  <tr>
-    <td><b>keys_map</b></td>
-    <td><tt>object</tt></td>
-    <td class="definition">
-		Defines a map of the keys between the items in the tag search results and the item format used inside the plugin. <br />
-		Default value: <br /><tt>{id: 'id', title: 'name', description: '', img: 'img', no_img_class: 'icon', type: 'type'}</tt> <br /><br />
-		The keys in the object are the keys a tag will have when used inside the plugin.
-    </td>
-  </tr>
-  <tr>
-    <td><b>syntax</b></td>
-    <td><tt>function</tt></td>
-    <td class="definition">
-		This is template function created using Underscore which transforms the tag object to markup. <br />
-		Default value: <br /><tt>_.template('@[[<%= id %>:<%= type %>:<%= title %>]]')</tt>
-    </td>
-  </tr>
-  <tr>
-    <td><b>parser</b></td>
-    <td><tt>RegExp</tt></td>
-    <td class="definition">
-		Regular Expression that matches the markup for this trigger character. <br />
-		Default value: <br /><tt>/(@)\[\[(\d+):([\w\s\.\-]+):([\w\s@\.,-\/#!$%\^&\*;:{}=\-_`~()]+)\]\]/gi</tt>
-    </td>
-  </tr>
-  <tr>
-    <td><b>parserGroups</b></td>
-    <td><tt>object</tt></td>
-    <td class="definition">
-		Object that maps the indexes of the parsed groups with the corresponding tag properties. <br />
-		Default value: <tt>{id: 2, type: 3, title: 4}</tt> <br /><br />
-		<span class="alias">NB: if you modify this for given trigger be sure to have the max index of a group match a propery.</span>
-    </td>
-  </tr>
-  <tr>
-    <td><b>classes</b></td>
-    <td><tt>object</tt></td>
-    <td class="definition">
+</p>
+<p>
+	<b class="header">keys_map</b> <tt>object</tt> <br />
+	Defines a map of the keys between the items in the tag search results and the item format used inside the plugin.
+	The keys in the object are the keys a tag will have when used inside the plugin. <br />
+	Default value: 
+	<pre>
+{
+	id: 'id',
+	title: 'name',
+	description: '',
+	img: 'img',
+	no_img_class: 'icon',
+	type: 'type'
+}
+	</pre>
+</p>
+<p>
+	<b class="header">syntax</b> <tt>function</tt> <br />
+	This is template function created using Underscore which transforms the tag object to markup.
+	Default value: <br />
+	<tt>_.template('@[[<%= id %>:<%= type %>:<%= title %>]]')</tt>
+</p>
+<p>
+	<b class="header">parser</b> <tt>RegExp</tt> <br />
+	Regular Expression that matches the markup for this trigger character. <br />
+	Default value: <br />
+	<tt>/(@)\[\[(\d+):([\w\s\.\-]+):([\w\s@\.,-\/#!$%\^&\*;:{}=\-_`~()]+)\]\]/gi</tt>
+</p>
+<p>
+	<b class="header">parserGroups</b> <tt>object</tt> <br />
+	Object that maps the indexes of the parsed groups with the corresponding tag properties. 
+	Default value: <br />
+	<tt>{id: 2, type: 3, title: 4}</tt> <br /><br />
+	<span class="alias">NB: if you modify this for given trigger be sure to have the max index of a group match a propery.</span>
+</p>
+<p>
+	<b class="header">classes</b> <tt>object</tt> <br />
       Object which contains classes used in the layout as key/value pairs.
-    </td>
-  </tr>
-</table>
+</p>
 
 <a class="anchor" name="methods"></a>
 <h2>Methods</h2>
 
 <p>jquery.textntags does expose a number of public methods, you can call on an instance. </p>
 
-<table>
-  <tr>
-    <td><b>init</b></td>
-    <td></td>
-    <td class="definition">
-      Initialises the textntags component on a specific element.
-    </td>
-  </tr>
-  <tr>
-    <td><b>reset</b></td>
-    <td></td>
-    <td class="definition">
+<p>
+	<b class="header">init</b> <tt>function(settings)</tt> <br />
+	Initialises the textntags component on a specific element.
+	And actually you can't invoke it more than once on an element.
+</p>
+<p>
+	<b class="header">reset</b> <tt>function</tt> <br />
       Resets the component, clears all tags.
-    </td>
-  </tr>
-  <tr>
-    <td><b>val(callbackOrVal)</b></td>
-    <td></td>
-    <td class="definition">
-      An async method which accepts a callback function and returns a value of the input field (including markup) as a first parameter of this function. <br/>
-	  This is the value you want to send to your server. <br/>
-	  The second way to use this method is as a setter - pass string value to be set as value of the textarea. The string can contain markup.
-    </td>
-  </tr>
-  <tr>
-    <td><b>getTags(callback)</b></td>
-    <td></td>
-    <td class="definition">
-      An async method which accepts a callback function and returns a collection of unique tags as hash objects as a first parameter.
-    </td>
-  </tr>
-  <tr>
-    <td><b>getTagsMap(callback)</b></td>
-    <td></td>
-    <td class="definition">
+</p>
+<p>
+	<b class="header">val</b> <tt>function(callbackOrVal)</tt> <br />
+	An async method which accepts a callback function and returns a value of the input field (including markup) as a first parameter of this function. <br/>
+	This is the value you want to send to your server. <br/>
+	The second way to use this method is as a setter - pass string value to be set as value of the textarea. The string can contain markup.
+</p>
+<p>
+	<b class="header">getTags</b> <tt>function(callback)</tt> <br />
+	An async method which accepts a callback function and returns a collection of unique tags as hash objects as a first parameter.
+</p>
+<p>
+	<b class="header">getTagsMap</b> <tt>function(callback)</tt> <br />
       An async method which accepts a callback function and returns a map(array) of all tags (non-unique) as array as a first parameter. <br /><br />
-	  The format of each map element is an array [positionInPlainText, lengthOfTitle, triggerChar, tagAsObject]. Example:  <br /><br />
+	  The format of each map element is an array <tt>[positionInPlainText, lengthOfTitle, triggerChar, tagAsObject]</tt>. Example:  <br /><br />
 <pre>
 $(...).textntags('getTagsMap', function (tagsMap) {
 	// tagsMap = [[1, 6, '@', {'id': }]]
 });
 </pre>
-    </td>
-  </tr>
-  <tr>
-    <td><b>parseTaggedText(tagged_text, callback)</b></td>
-    <td></td>
-    <td class="definition">
-      An async method which accepts a tagged_text (text with tags markup) and a callback function and returns a parsed version of the text in form of object
-	  with the following properties:
-	  <ul>
+</p>
+<p>
+	<b class="header">parseTaggedText</b> <tt>function(tagged_text, callback)</tt> <br />
+	An async method which accepts a tagged_text (text with tags markup) and a callback function and returns a parsed version of the text in form of object
+	with the following properties:
+	<ul>
 		<li><tt>plain_text</tt> - text with removed markup</li>
 		<li><tt>tagged_text</tt> - the same as the input</li>
 		<li><tt>tagsCollection</tt> - a map of the tags in the text</li>
-	  </ul>
-    </td>
-  </tr>
-</table>
+	</ul>
+</p>
 
 <a class="anchor" name="events"></a>
 <h2>Events</h2>
 
-<p>TODO</p>
+<p>The plugin supports custom events so that dependency can be implemented</p>
+
+<p>
+	<b class="header">tagsAdded</b> <tt>callback(e, addedTagsList)</tt> <br />
+	Triggered when tagging occured, and also in 2 special cases:
+	<ol>
+		<li>When the plugin initializes on a field and tags are found</li>
+		<li>When the method <tt>val</tt> of the plugin is used as a setter and tags are found in the new text</li>
+	</ol>
+	Passes 2 arguments to a callback function:
+	<ol>
+		<li>The event created by jQuery</li>
+		<li>An array with the added tags</li>
+	</ol>
+</p>
+<p>
+	<b class="header">tagsRemoved</b> <tt>callback(e, removedTagsList)</tt> <br />
+	Triggered when tag removal occured, and also in a special case:
+	<ol>
+		<li>When the method <tt>val</tt> of the plugin is used as a setter and the current tags are removed</li>
+	</ol>
+	Passes 2 arguments to a callback function:
+	<ol>
+		<li>The event created by jQuery</li>
+		<li>An array with the removed tags</li>
+	</ol>
+</p>
+<p>
+	Example binding to the event:
+<pre>
+$('textarea.tagged_text_ex1')
+  .bind('tagsAdded.textntags', function (e, addedTagsList) {
+    console.log('tagsAdded:' + JSON.stringify(addedTagsList));
+  });
+</pre>
+</p>
 
 <a class="anchor" name="query"></a>
 <h2>Query data structure</h2>
@@ -290,22 +324,35 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 }
 </pre>
 
-<p>"img" property is a URL used for image avatars when "showImageOrIcon"-option is enabled</p>
-<p>"icon" property is a className used for avatars when "showImageOrIcon"-option is disabled</p>
-<p>"type" property specifies an object type which is used in the marked-up version of the mentions result</p>
+<p>
+	<ul>
+		<li><tt>img</tt> property is a URL used for images when the <tt>showImageOrIcon</tt> option is enabled (along with the corresponding template)</li>
+		<li><tt>icon</tt> property is a className used for icon when the <tt>showImageOrIcon</tt> option is disabled (along with the corresponding template)</li>
+		<li><tt>type</tt> property specifies an object type which is used in the marked-up version of the tags result</li>
+	</ul>
+</p>
 
 
 <a class="anchor" name="markup"></a>
 <h2>Markup format</h2>
-<p>When tags are being added to the input, a marked-up version of the value is generated, to allow the tags to be extracted, parsed and stored later. </p>
+<p>
+	When tags are being added to the input, a marked-up version of the value is generated, to allow the tags to be extracted, parsed and stored later. <br />
+	Example markup: <tt>@[id:type:title]</tt> <br />
+	And in action: <tt>This is a message for @[1:contact:Daniel Zahariev]</tt> <br />
+	You can define your own markup format for the tags by exploiting the settings `syntax`, `parser` and `parserGroups` which you can define per trigger. <br />
+	Using the following settings for triggers: <tt>syntax</tt>, <tt>parser</tt> and <tt>parserGroups</tt> you can define your own markup. <br />
+	Example (#4 in <a href="#examples">Examples</a>): 
 <pre>
-  This is a message for @[id:type:title]
+$('textarea.tagged_text_ex4').textntags({
+  triggers: {'#': {
+    uniqueTags   : false,
+    syntax       : _.template('#[<%= id %>:<%= type %>:<%= title %>]'),
+    parser       : /(#)\[(\d+):([\w\s\.\-]+):([\w\s@\.,-\/#!$%\^&\*;:{}=\-_`~()]+)\]/gi,
+    parserGroups : {id: 2, type: 3, title: 4},
+  }}
+});
 </pre>
-<p>Like:</p>
-<pre>
-  This is a message for @[1:contact:Daniel Zahariev]
-</pre>
-<p>You can define your own markup format for the tags by exploiting the settings `syntax`, `parser` and `parserGroups` which you can define per trigger</p>
+</p>
 
 
 <a class="anchor" name="browser_support"></a>
@@ -319,10 +366,6 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 
 <p>The component is also using the new HTML5 "input" event. This means older browsers like IE8 need a polyfill which emulates the event (it is bundled).</p>
 
-<p>The component itself is implemented as a small independent function, so it can easily be ported to frameworks other than jQuery. </p>
-
-<p>Furthermore all utility functions have been centralized in the utils-object, which can be replaced with references if you already got functions like htmlEncode, etc. </p>
-
 <a class="anchor" name="license"></a>
 <h2>License</h2>
 <p>MIT License - <a href="http://www.opensource.org/licenses/mit-license.php">http://www.opensource.org/licenses/mit-license.php</a></p>
@@ -331,7 +374,11 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 <a class="anchor" name="change_log"></a>
 <h2>Change Log</h2>
 <p>
-  <b class="header">1.0.0</b><br/>
+	<b class="header">0.1.1</b><br />
+	Multi-char triggers supported, bugfixed a case when Return key is clicked
+</p>
+<p>
+  <b class="header">0.1.0</b><br/>
   Initial release.
 </p>
 
@@ -342,6 +389,7 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 <script src="assets/example1.js" type="text/javascript"></script>
 <script src="assets/example2.js" type="text/javascript"></script>
 <script src="assets/example3.js" type="text/javascript"></script>
+<script src="assets/example4.js" type="text/javascript"></script>
 
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
 
