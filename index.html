@@ -69,8 +69,8 @@
 
 <a class="anchor" name="examples"></a>
 <h2>Examples</h2>
-
 <p>1. <b>Basic</b> example (<a href="assets/example1.js">source</a>) - duplicate tags are allowed</p>
+<p><i>Note: <tt>console.log</tt> and <tt>JSON.stringify</tt> are used in this example</i></p>
 
 <div class="examples">
   <textarea class="tagged_text_ex1" placeholder="Try to tag me, by typing @dan"></textarea>
@@ -100,7 +100,7 @@
 
 <div class="examples">
   <textarea class="tagged_text_ex4" placeholder="Try to tag me, by typing !dan or #dan or PP:dan"></textarea>
-  <a class="button get-syntax-text3">Get marked-up value</a>
+  <a class="button get-syntax-text4">Get marked-up value</a>
 </div>
 
 
@@ -127,9 +127,9 @@
 $('textarea.tagged_text').textntags({
   onDataRequest: function (mode, query, triggerChar, callback) {
     var data = [
-      { id:1, name:'Daniel Zahariev', 'img':'http://example.com/img1.jpg', 'type':'contact' },
-      { id:2, name:'Petar Atanasov', 'img':'http://example.com/img2.jpg', 'type':'contact' },
-      { id:3, name:'Dinko Tanev', 'img':'http://example.com/img3.jpg', 'type':'contact' }
+      { id:1, name:'Daniel Zahariev',  'img':'http://example.com/img1.jpg', 'type':'contact' },
+      { id:2, name:'Daniel Radcliffe', 'img':'http://example.com/img2.jpg', 'type':'contact' },
+      { id:3, name:'Daniel Nathans',   'img':'http://example.com/img3.jpg', 'type':'contact' }
     ];
 
     query = query.toLowerCase();

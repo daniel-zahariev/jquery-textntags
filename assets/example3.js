@@ -8,9 +8,9 @@ $(function () {
         }},
         onDataRequest:function (mode, query, triggerChar, callback) {
             var data = [
-                { id:1, name:'Daniel Zahariev', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg', 'type':'contact' },
-                { id:2, name:'Petar Atanasov',  'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg', 'type':'contact' },
-                { id:3, name:'Dinko Tanev',     'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact' }
+                { id:1, name:'Daniel Zahariev',  'img':'http://example.com/img1.jpg', 'type':'contact' },
+                { id:2, name:'Daniel Radcliffe', 'img':'http://example.com/img2.jpg', 'type':'contact' },
+                { id:3, name:'Daniel Nathans',   'img':'http://example.com/img3.jpg', 'type':'contact' }
             ];
 
             query = query.toLowerCase();

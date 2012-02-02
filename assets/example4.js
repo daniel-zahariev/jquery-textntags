@@ -19,19 +19,19 @@ $(function () {
         onDataRequest:function (mode, query, triggerChar, callback) {
             var data = {
                 '!': [
-                    { id:1, name:'Daniel Zahariev (via !)', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg', 'type':'contact1' },
-                    { id:2, name:'Petar Atanasov (via !)',  'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg', 'type':'contact1' },
-                    { id:3, name:'Dinko Tanev (via !)',     'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact1' }
+                    { id:1, name:'Daniel Zahariev (via !)',   'img':'http://example.com/img1.jpg', 'type':'contact1' },
+                    { id:2, name:'Daniel Radcliffe (via !)',  'img':'http://example.com/img2.jpg', 'type':'contact1' },
+                    { id:3, name:'Daniel Nathans (via !)',    'img':'http://example.com/img3.jpg', 'type':'contact1' }
                 ],
                 '#': [
-                    { id:4, name:'Daniel Zahariev (via #)', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg', 'type':'contact2' },
-                    { id:5, name:'Petar Atanasov (via #)',  'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg', 'type':'contact2' },
-                    { id:6, name:'Dinko Tanev (via #)',     'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact2' }
+                    { id:4, name:'Daniel Zahariev (via #)',  'img':'http://example.com/img1.jpg', 'type':'contact2' },
+                    { id:5, name:'Daniel Radcliffe (via #)', 'img':'http://example.com/img2.jpg', 'type':'contact2' },
+                    { id:6, name:'Daniel Nathans (via #)',   'img':'http://example.com/img3.jpg', 'type':'contact2' }
                 ],
                 'PP:': [
-                    { id:7, name:'Daniel Zahariev (via PP:)', 'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/174073_1704423938_6732585_q.jpg', 'type':'contact3' },
-                    { id:8, name:'Petar Atanasov (via PP:)',  'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/161443_100002096378713_348648_q.jpg', 'type':'contact3' },
-                    { id:9, name:'Dinko Tanev (via PP:)',     'img':'http://profile.ak.fbcdn.net/hprofile-ak-snc4/211388_786209857_4725069_q.jpg', 'type':'contact3' }
+                    { id:7, name:'Daniel Zahariev (via PP:)',  'img':'http://example.com/img1.jpg', 'type':'contact3' },
+                    { id:8, name:'Daniel Radcliffe (via PP:)', 'img':'http://example.com/img2.jpg', 'type':'contact3' },
+                    { id:9, name:'Daniel Nathans (via PP:)',   'img':'http://example.com/img3.jpg', 'type':'contact3' }
                 ]
             };
 
@@ -40,5 +40,14 @@ $(function () {
 
             callback.call(this, found);
         }
+    });
+    
+    
+
+    $('.get-syntax-text4').click(function() {
+        $('textarea.tagged_text_ex4').textntags('val', function(text) {
+            alert(text);
+            console.log(text);
+        });
     });
 });
