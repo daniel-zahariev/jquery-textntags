@@ -42,6 +42,12 @@ $(function () {
         });
     });
 
+    $('.get-tags-map-fb').click(function() {
+        $('textarea.tagged_text_ex1').textntags('getTagsMapFacebook', function(data) {
+            console.log(JSON.stringify(data), data);
+        });
+    });
+
     $('.get-copy-tags').click(function() {
         $('textarea.tagged_text_ex1').textntags('val', function(text) {
             $('textarea.tagged_text_ex2').textntags('val', text);

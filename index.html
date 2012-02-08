@@ -15,7 +15,7 @@
 
 <div id="sidebar" class="interface">
     <a class="toc_title" href="#">
-      jquery.textntags <span class="version">(0.1.1)</span>
+      jquery.textntags <span class="version">(0.1.2)</span>
     </a>
     
     <a class="toc_title" href="#">
@@ -77,6 +77,7 @@
   <a class="button get-syntax-text">Get marked-up value</a>
   <a class="button get-tags">Get tags collection</a>
   <a class="button get-tags-map">Get tags map</a>
+  <a class="button get-tags-map-fb">Get tags map in Facebook format</a>
   <a class="button get-copy-tags">Copy text'n'tags to next textarea</a>
 </div>
 
@@ -260,6 +261,22 @@ $(...).textntags('getTagsMap', function (tagsMap) {
 </pre>
 </p>
 <p>
+	<b class="header">getTagsMapFacebook</b> <tt>function(callback)</tt> <br />
+	An async method which accepts a callback function and returns a map(object) of all tags (non-unique) as object as a first parameter. <br /><br />
+	The format is specified by Facebook for <a href="http://developers.facebook.com/docs/reference/api/post/" target="_blank">message_tags</a>. Example: <br /><br />
+<pre>
+{
+  "0": [{
+    "id": "1", 
+    "name": "Daniel Zahariev", 
+    "type": "user", 
+    "offset": 0, 
+    "length": 15
+  }]
+}
+</pre>
+</p>
+<p>
 	<b class="header">parseTaggedText</b> <tt>function(tagged_text, callback)</tt> <br />
 	An async method which accepts a tagged_text (text with tags markup) and a callback function and returns a parsed version of the text in form of object
 	with the following properties:
@@ -373,6 +390,11 @@ $('textarea.tagged_text_ex4').textntags({
 
 <a class="anchor" name="change_log"></a>
 <h2>Change Log</h2>
+<p>
+	<b class="header">0.1.2</b><br />
+	Fixed selection of tag from the suggestion list with <tt>return</tt> and <tt>tab</tt> keys. <br />
+	Added the method <a href="#methods">getTagsMapFacebook</a> and example for it.
+</p>
 <p>
 	<b class="header">0.1.1</b><br />
 	Multi-char triggers supported, bugfixed a case when Return key is clicked
