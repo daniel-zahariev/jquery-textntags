@@ -1,6 +1,6 @@
 /*
  * Text'N'Tags (textntags)
- * Version 0.1.1
+ * Version 0.1.2
  * Written by: Daniel Zahariev
  *
  * Dependencies: jQuery, underscore.js
@@ -85,7 +85,7 @@
         var elContainer, elEditor, elBeautifier, elTagList, elTagListItemActive;
         var tagsCollection;
         var currentTriggerChar, currentDataQuery;
-        var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0;
+        var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0, editorAddingTag = false;
         
         function setSettings (options) {
             if (settings != null) {
@@ -304,6 +304,7 @@
                 case keys.RETURN:
                 case keys.TAB:
                     if (elTagListItemActive && elTagListItemActive.length) {
+						editorAddingTag = true;
                         elTagListItemActive.click();
                         return false;
                     }
@@ -335,6 +336,12 @@
             if (e.keyCode == KEY.RETURN) {
                 updateBeautifier(elEditor.val());
             }
+			if (editorAddingTag) {
+				if (e.keyCode == KEY.RETURN || e.keyCode == KEY.TAB) {
+					e.preventDefault();
+				}
+				editorAddingTag = false;
+			}
         }
         
         function onEditorInput (e) {
@@ -531,6 +538,26 @@
                 }
 
                 callback.call(this, tagsCollection);
+            },
+            getTagsMapFacebook : function (callback) {
+                if (!_.isFunction(callback)) {
+                    return;
+                }
+				var fbTagsCollection = {}, triggers = settings.triggers;
+					
+				_.each(tagsCollection, function (tagPos) {
+					var objPropTransformer = transformObjectProperties(triggers[tagPos[2]].keys_map),
+						localTag = objPropTransformer(tagPos[3], false);
+					fbTagsCollection[tagPos[0]] = [{
+						id: localTag.id,
+						name: localTag.title,
+						type: localTag.type,
+						offset: tagPos[0],
+						length: tagPos[1]
+					}];
+				});
+
+                callback.call(this, fbTagsCollection);
             },
             parseTaggedText: function (tagged_text, callback) {
                 if (!_.isFunction(callback)) {
