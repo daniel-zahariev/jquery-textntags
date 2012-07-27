@@ -238,7 +238,7 @@
             var sStart = elEditor[0].selectionStart,
                 left_text = elEditor.val().substr(0, sStart + look_ahead),
                 found_trigger, found_trigger_char = null, query;
-            
+
             if (!left_text || !left_text.length) {
                 return;
             }
@@ -252,7 +252,7 @@
                 }
                 return false;
             });
-            
+
             if (!found_trigger_char || query.length < found_trigger.minChars) {
                 hideTagList();
             } else {
@@ -422,11 +422,15 @@
                 left_text = plain_text.substr(0, tagStart),
                 right_text = plain_text.substr(sStart),
                 new_text = left_text + localTag.title + right_text;
-            
+
+            // shift the tags after the current new one
+            shiftTagsPosition(sStart, newCaretPosition - sStart);
+
             // explicitly convert to string for comparisons later
             tag[trigger.keys_map.id] = '' + tag[trigger.keys_map.id];
             
             tagsCollection.push([tagStart, localTag.title.length, currentTriggerChar, tag]);
+            tagsCollection = _.sortBy(tagsCollection, function (t) { return t[0]; });
             
             currentTriggerChar = '';
             currentDataQuery = '';
