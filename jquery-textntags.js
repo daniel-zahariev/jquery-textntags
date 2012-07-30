@@ -7,11 +7,10 @@
  *
  * License: MIT License - http://www.opensource.org/licenses/mit-license.php
  */
-
 (function ($, _, undefined) {
 
     // Keys "enum"
-    var KEY = { BACKSPACE : 8, TAB : 9, RETURN : 13, ESC : 27, LEFT : 37, UP : 38, RIGHT : 39, DOWN : 40, COMMA : 188, SPACE : 32, HOME : 36, END : 35, 'DELETE': 46 };
+    var KEY = { V: 86, Z: 90, BACKSPACE : 8, TAB : 9, RETURN : 13, ESC : 27, LEFT : 37, UP : 38, RIGHT : 39, DOWN : 40, COMMA : 188, SPACE : 32, HOME : 36, END : 35, 'DELETE': 46 };
     var defaultSettings = {
         onDataRequest   : $.noop,
         realValOnSubmit : true,
@@ -86,6 +85,7 @@
         var tagsCollection;
         var currentTriggerChar, currentDataQuery;
         var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0, editorAddingTag = false;
+        var editorInPasteMode = false, editorPasteStartPosition = 0, editorPasteCutCharacters = 0;
         
         function setSettings (options) {
             if (settings != null) {
@@ -109,6 +109,7 @@
                 click:    onEditorClick,
                 keydown:  onEditorKeyDown,
                 keypress: onEditorKeyPress,
+                keyup:    onEditorKeyUp,
                 input:    onEditorInput,
                 blur:     onEditorBlur
             });
@@ -159,8 +160,7 @@
             });
             
             beautified_text = beautified_text.replace(/\n/g, '<br />&shy;');
-            beautified_text = beautified_text.replace(/ {2}/g, '&nbsp; ') + '&shy;';
-            
+            beautified_text = beautified_text.replace(/ {2}/g, ' &nbsp;') + '&shy;';
             return beautified_text;
         }
         
@@ -227,7 +227,7 @@
             };
         }
         
-        function updateBeautifier (shadow) {
+        function updateBeautifier () {
             elBeautifier.find('div').html(getBeautifiedText());
             elEditor.css('height', elBeautifier.outerHeight() + 'px');
         }
@@ -235,7 +235,8 @@
         function checkForTrigger(look_ahead) {
             look_ahead = look_ahead || 0;
             
-            var sStart = elEditor[0].selectionStart,
+            var selectionStartFix = $.browser.webkit ? 0 : -1,
+                sStart = elEditor[0].selectionStart + selectionStartFix,
                 left_text = elEditor.val().substr(0, sStart + look_ahead),
                 found_trigger, found_trigger_char = null, query;
 
@@ -253,7 +254,7 @@
                 return false;
             });
 
-            if (!found_trigger_char || query.length < found_trigger.minChars) {
+            if (!found_trigger_char || (found_trigger &&(query.length < found_trigger.minChars))) {
                 hideTagList();
             } else {
                 currentDataQuery = query;
@@ -317,7 +318,7 @@
                     }
                     if(sEnd > sStart) {
                         removeTagsInRange(sStart, sEnd);
-                        shiftTagsPosition(sEnd, sStart - sEnd);
+                        shiftTagsPosition(sStart, sStart - sEnd);
                     }
                     return true;
 
@@ -326,6 +327,19 @@
                 case keys.HOME:
                 case keys.END:
                     _.defer(function () { checkForTrigger.call(this, 0); });
+                    break;
+                case keys.V:
+                    // checking for paste
+                    if (e.ctrlKey) {
+                        editorInPasteMode = true;
+                        editorPasteStartPosition = sStart;
+                        editorPasteCutCharacters = sEnd - sStart;
+                        removeTagsInRange(sStart, sEnd);
+                    }
+                    break;
+                case keys.Z:
+                    // forbid undo
+                    return false;
                     break;
             }
 
@@ -343,20 +357,40 @@
 				editorAddingTag = false;
 			}
         }
+
+        function onEditorKeyUp (e) {
+            if (editorInPasteMode) {
+                editorInPasteMode = false;
+
+                if (editorSelectionLength > 0) {
+                    return;
+                }
+
+                var sStart = elEditor[0].selectionStart,
+                    sEnd = elEditor[0].selectionEnd;
+
+                shiftTagsPosition(editorPasteStartPosition, sEnd - editorPasteStartPosition - editorPasteCutCharacters);
+                updateBeautifier();
+            }
+        }
         
         function onEditorInput (e) {
+            var selectionStartFix = $.browser.webkit ? 0 : -1;
             if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
                 if (editorSelectionLength > 0) {
                     // delete of selection occured
-                    var sStart = elEditor[0].selectionStart,
+                    var sStart = elEditor[0].selectionStart + selectionStartFix,
                         selectionLength = editorSelectionLength,
                         sEnd = sStart + selectionLength,
                         tags_shift_positions = elEditor.val().length - editorTextLength;
                     removeTagsInRange(sStart, sEnd);
                     shiftTagsPosition(sEnd, tags_shift_positions);
-                } else {
+                } else if (!editorInPasteMode) {
                     // char input - shift with 1
-                    var sStart = elEditor[0].selectionStart;
+                    var sStart = elEditor[0].selectionStart + selectionStartFix,
+                        sEnd = elEditor[0].selectionEnd + selectionStartFix,
+                        selectionLength = sEnd - sStart;
+
                     if (editorKeyCode == KEY.RETURN) {
                         shiftTagsPosition(sStart - 1, 1);
                         removeTagsInRange(sStart, sStart);
