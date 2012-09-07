@@ -338,8 +338,10 @@
                     }
                     break;
                 case keys.Z:
-                    // forbid undo
-                    return false;
+                    if (e.ctrlKey) {
+                        // forbid undo
+                        return false;
+                    }
                     break;
             }
 
