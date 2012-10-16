@@ -516,7 +516,10 @@
                 var tagItem, localTag = objPropTransformer(tag, false);
                 localTag.title = utils.highlightTerm(utils.htmlEncode((localTag.title)), query);
                 tagItem = $(templates.tagsListItem(localTag)).data('tag', tag);
-                tagItem = tagItem.prepend(imgOrIconTpl(localTag)).appendTo(tagsDropDown);
+                if(localTag.img) {
+                  tagItem = tagItem.prepend(imgOrIconTpl(localTag));
+                }
+                tagItem.appendTo(tagsDropDown);
 
                 if (index === 0) { 
                     selectTagListItem(tagItem, trigger.classes.tagActiveDropDown);
