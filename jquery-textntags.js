@@ -86,6 +86,7 @@
         var currentTriggerChar, currentDataQuery;
         var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0, editorAddingTag = false;
         var editorInPasteMode = false, editorPasteStartPosition = 0, editorPasteCutCharacters = 0;
+        var REGEX_ESCAPE_CHARS = ['[', '^', '$', '.', '|', '?', '*', '+', '(', ')', '\\'];
         
         function setSettings (options) {
             if (settings != null) {
@@ -96,7 +97,12 @@
             delete settings.triggers[''];
             _.each(settings.triggers, function (val, key) {
                 settings.triggers[key] = $.extend(true, {}, trigger_defaults, val);
-                settings.triggers[key].finder = new RegExp(key + '\\w+(\\s+\\w+)?\\s?$', 'gi');
+                if (_.find(REGEX_ESCAPE_CHARS, function(character){ return character === key })) {
+                  var regex_key = "\\" + key;
+                } else {
+                  var regex_key = key;
+                }
+                settings.triggers[key].finder = new RegExp(regex_key + '\\w+(\\s+\\w+)?\\s?$', 'gi');
             });
             
             templates = settings.templates;
