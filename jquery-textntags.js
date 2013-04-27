@@ -18,7 +18,7 @@
         templates       : {
             wrapper           : _.template('<div class="textntags-wrapper"></div>'),
             beautifier        : _.template('<div class="textntags-beautifier"><div></div></div>'),
-            tagHighlight      : _.template('<strong class="<%= class_name %>"><span>$<%= idx %></span></strong>'),
+            tagHighlight      : _.template('<strong class="<%= class_name %>"><span><%- title %></span></strong>'),
             tagList           : _.template('<div class="textntags-tag-list"></div>'),
             tagsListItem      : _.template('<li><%= title %></li>'),
             tagsListItemImage : _.template('<img src="<%= img %>" />'),
@@ -127,7 +127,7 @@
         var settings = null, templates;
         var elContainer, elEditor, elBeautifier, elTagList, elTagListItemActive;
         var tagsCollection;
-        var currentTriggerChar, currentDataQuery;
+        var currentTriggerChar, currentDataQuery, currentTagPosition = 0;
         var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0, editorAddingTag = false;
         var editorInPasteMode = false, editorPasteStartPosition = 0, editorPasteCutCharacters = 0;
         var REGEX_ESCAPE_CHARS = ['[', '^', '$', '.', '|', '?', '*', '+', '(', ')', '\\'];
@@ -200,18 +200,47 @@
         function getEditorValue () {
             return elEditor.val();
         }
-        
-        function getBeautifiedText (tagged_text) {
-            var beautified_text = tagged_text || getTaggedText();
 
-            _.each(settings.triggers, function (trigger) {
-                var markup = templates.tagHighlight({idx: trigger.parserGroups.title, class_name: trigger.classes.tagHighlight});
-                beautified_text = beautified_text.replace(trigger.parser, markup);
+        function beautifiedReplace(text) {
+            return text.replace(/\n/g, '<br />&shy;').replace(/ {2}/g, ' &nbsp;');
+        }
+        
+        function pushDiffText(text, diff_text, startPosition, endPosition) {
+            if (currentTagPosition >= startPosition && currentTagPosition < endPosition) {
+                text.push(beautifiedReplace(_.escape(diff_text.substr(0, currentTagPosition - startPosition))),
+                          '<span class="textntags-caret-position"></span>',
+                          beautifiedReplace(_.escape(diff_text.substr(currentTagPosition - startPosition))));
+            } else {
+                text.push(beautifiedReplace(_.escape(diff_text)));
+            }
+        }
+
+        function getBeautifiedText (tagged_text) {
+            var plain_text = getEditorValue(),
+                position = 0, beautified_text, triggers = settings.triggers;
+
+            beautified_text = _.map(tagsCollection, function (tagPos) {
+                var text = [],
+                    diff_pos = tagPos[0] - position,
+                    diff_text = diff_pos > 0 ? plain_text.substr(position, diff_pos) : '',
+                    objPropTransformer = transformObjectProperties(triggers[tagPos[2]].keys_map),
+                    tagMarkup = templates.tagHighlight({
+                        title: objPropTransformer(tagPos[3], false).title,
+                        class_name: triggers[tagPos[2]].classes.tagHighlight
+                    });
+                
+                pushDiffText(text, diff_text, position, tagPos[0]);
+
+                text.push(tagMarkup);
+
+                position = tagPos[0] + tagPos[1];
+
+                return text.join('');
             });
-            
-            beautified_text = beautified_text.replace(/\n/g, '<br />&shy;');
-            beautified_text = beautified_text.replace(/ {2}/g, ' &nbsp;') + '&shy;';
-            return beautified_text;
+
+            pushDiffText(beautified_text, plain_text.substr(position), position, plain_text.length);
+
+            return beautified_text.join('') + '&shy;';
         }
         
         function getTaggedText() {
@@ -279,6 +308,24 @@
         
         function updateBeautifier () {
             elBeautifier.find('div').html(getBeautifiedText());
+            var el = elBeautifier.find('span.textntags-caret-position');
+
+            if (el.length > 0) {
+                var pos = el.position(), ofs = el.offset();
+                if (ofs.top > ($(document).height() * 0.75)) {
+                    pos = {
+                        top: 'auto',
+                        left: pos.left + 'px',
+                        bottom: (el.offsetParent().height() - pos.top + 30) + 'px'
+                    };
+                } else {
+                    pos = {
+                        top: pos.top + 'px',
+                        left: pos.left + 'px'
+                    };
+                }
+                elTagList.css(pos);
+            }
             elEditor.css('height', elBeautifier.outerHeight() + 'px');
         }
         
@@ -308,6 +355,7 @@
             } else {
                 currentDataQuery = query;
                 currentTriggerChar = found_trigger_char;
+                currentTagPosition = left_text.length - query.length - found_trigger_char.length;
                 _.defer(_.bind(searchTags, this, currentDataQuery, found_trigger_char));
             }
         }
@@ -547,6 +595,8 @@
         function populateTagList (query, triggerChar, results) {
             var trigger = settings.triggers[triggerChar];
             
+            updateBeautifier();
+
             if (trigger.uniqueTags) {
                 // Filter items that has already been mentioned
                 var id_key = trigger.keys_map.id, tagIds = _.map(tagsCollection, function (tagPos) { return tagPos[3][id_key]; });
