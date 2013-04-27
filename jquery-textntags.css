@@ -40,8 +40,6 @@
   background: #fff;
   border: 1px solid #b2b2b2;
   position: absolute;
-  left: 0;
-  right: 0;
   z-index: 10000;
   margin-top: -2px;
 
@@ -61,6 +59,7 @@
 
 .textntags-wrapper .textntags-tag-list li {
   background-color: #fff;
+  color: black;
   padding: 0 5px;
   margin: 0;
   width: auto;

@@ -18,7 +18,7 @@
         templates       : {
             wrapper           : _.template('<div class="textntags-wrapper"></div>'),
             beautifier        : _.template('<div class="textntags-beautifier"><div></div></div>'),
-            tagHighlight      : _.template('<strong class="<%= class_name %>"><span>$<%= idx %></span></strong>'),
+            tagHighlight      : _.template('<strong class="<%= class_name %>"><span><%- title %></span></strong>'),
             tagList           : _.template('<div class="textntags-tag-list"></div>'),
             tagsListItem      : _.template('<li><%= title %></li>'),
             tagsListItemImage : _.template('<img src="<%= img %>" />'),
@@ -63,19 +63,63 @@
             }
             return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
         },
-        setCaratPosition: function (domNode, caretPos) {
-            if (domNode.createTextRange) {
-                var range = domNode.createTextRange();
-                range.move('character', caretPos);
-                range.select();
-            } else {
-                if (domNode.selectionStart) {
-                    domNode.focus();
-                    domNode.setSelectionRange(caretPos, caretPos);
-                } else {
-                    domNode.focus();
+        // Derived from jQuery.selection by Iwasaki Koji (@madapaja) http://blog.madapaja.net
+        setCaretPosition: function (element, caretPos) {
+            element.each(function () {
+                this.focus();
+                try {
+                    if (this.createTextRange) {
+                        var range = this.createTextRange();
+
+                        if (window.navigator.userAgent.toLowerCase().indexOf('msie') >= 0) {
+                            caretPos = this.value.substr(0, caretPos).replace(/\r/g, '').length;
+                        }
+
+                        range.collapse(true);
+                        range.moveStart('character', caretPos);
+                        range.moveEnd('character', 0);
+
+                        range.select();
+                    } else if (this.setSelectionRange) {
+                        this.setSelectionRange(caretPos, caretPos);
+                    }
+                } catch (e) {}
+            });
+        },
+        getCaretPosition: function (element) {
+            var result = {start: 0, end: 0};
+
+            if (element.length < 1) return result;
+
+            element = element[0];
+
+            if (!element.value) return result;
+
+            try {
+                if (window.getSelection) {
+                    result.start = element.selectionStart;
+                    result.end = element.selectionEnd;
+                } else if (document.selection) {
+                    element.focus();
+
+                    var range = document.selection.createRange(),
+                        range2 = document.body.createTextRange(),
+                        tmpLength;
+
+                    try {
+                        range2.moveToElementText(element);
+                        range2.setEndPoint('StartToStart', range);
+                    } catch (e) {
+                        range2 = element.createTextRange();
+                        range2.setEndPoint('StartToStart', range);
+                    }
+
+                    result.start = element.value.length - range2.text.length;
+                    result.end = result.start + range.text.length;
                 }
-            }
+            } catch (e) {}
+
+            return result;
         }
     };
     
@@ -83,7 +127,7 @@
         var settings = null, templates;
         var elContainer, elEditor, elBeautifier, elTagList, elTagListItemActive;
         var tagsCollection;
-        var currentTriggerChar, currentDataQuery;
+        var currentTriggerChar, currentDataQuery, currentTagPosition = 0;
         var editorSelectionLength = 0, editorTextLength = 0, editorKeyCode = 0, editorAddingTag = false;
         var editorInPasteMode = false, editorPasteStartPosition = 0, editorPasteCutCharacters = 0;
         var REGEX_ESCAPE_CHARS = ['[', '^', '$', '.', '|', '?', '*', '+', '(', ')', '\\'];
@@ -156,18 +200,47 @@
         function getEditorValue () {
             return elEditor.val();
         }
-        
-        function getBeautifiedText (tagged_text) {
-            var beautified_text = tagged_text || getTaggedText();
 
-            _.each(settings.triggers, function (trigger) {
-                var markup = templates.tagHighlight({idx: trigger.parserGroups.title, class_name: trigger.classes.tagHighlight});
-                beautified_text = beautified_text.replace(trigger.parser, markup);
+        function beautifiedReplace(text) {
+            return text.replace(/\n/g, '<br />&shy;').replace(/ {2}/g, ' &nbsp;');
+        }
+        
+        function pushDiffText(text, diff_text, startPosition, endPosition) {
+            if (currentTagPosition >= startPosition && currentTagPosition < endPosition) {
+                text.push(beautifiedReplace(_.escape(diff_text.substr(0, currentTagPosition - startPosition))),
+                          '<span class="textntags-caret-position"></span>',
+                          beautifiedReplace(_.escape(diff_text.substr(currentTagPosition - startPosition))));
+            } else {
+                text.push(beautifiedReplace(_.escape(diff_text)));
+            }
+        }
+
+        function getBeautifiedText (tagged_text) {
+            var plain_text = getEditorValue(),
+                position = 0, beautified_text, triggers = settings.triggers;
+
+            beautified_text = _.map(tagsCollection, function (tagPos) {
+                var text = [],
+                    diff_pos = tagPos[0] - position,
+                    diff_text = diff_pos > 0 ? plain_text.substr(position, diff_pos) : '',
+                    objPropTransformer = transformObjectProperties(triggers[tagPos[2]].keys_map),
+                    tagMarkup = templates.tagHighlight({
+                        title: objPropTransformer(tagPos[3], false).title,
+                        class_name: triggers[tagPos[2]].classes.tagHighlight
+                    });
+                
+                pushDiffText(text, diff_text, position, tagPos[0]);
+
+                text.push(tagMarkup);
+
+                position = tagPos[0] + tagPos[1];
+
+                return text.join('');
             });
-            
-            beautified_text = beautified_text.replace(/\n/g, '<br />&shy;');
-            beautified_text = beautified_text.replace(/ {2}/g, ' &nbsp;') + '&shy;';
-            return beautified_text;
+
+            pushDiffText(beautified_text, plain_text.substr(position), position, plain_text.length);
+
+            return beautified_text.join('') + '&shy;';
         }
         
         function getTaggedText() {
@@ -235,14 +308,31 @@
         
         function updateBeautifier () {
             elBeautifier.find('div').html(getBeautifiedText());
+            var el = elBeautifier.find('span.textntags-caret-position');
+
+            if (el.length > 0) {
+                var pos = el.position(), ofs = el.offset();
+                if (ofs.top > ($(document).height() * 0.75)) {
+                    pos = {
+                        top: 'auto',
+                        left: pos.left + 'px',
+                        bottom: (el.offsetParent().height() - pos.top + 30) + 'px'
+                    };
+                } else {
+                    pos = {
+                        top: pos.top + 'px',
+                        left: pos.left + 'px'
+                    };
+                }
+                elTagList.css(pos);
+            }
             elEditor.css('height', elBeautifier.outerHeight() + 'px');
         }
         
         function checkForTrigger(look_ahead) {
             look_ahead = look_ahead || 0;
             
-            var selectionStartFix = $.browser.webkit ? 0 : -1,
-                sStart = elEditor[0].selectionStart + selectionStartFix,
+            var sStart = utils.getCaretPosition(elEditor).start,
                 left_text = elEditor.val().substr(0, sStart + look_ahead),
                 found_trigger, found_trigger_char = null, query;
 
@@ -265,6 +355,7 @@
             } else {
                 currentDataQuery = query;
                 currentTriggerChar = found_trigger_char;
+                currentTagPosition = left_text.length - query.length - found_trigger_char.length;
                 _.defer(_.bind(searchTags, this, currentDataQuery, found_trigger_char));
             }
         }
@@ -275,8 +366,9 @@
         
         function onEditorKeyDown (e) {
             var keys = KEY, // store in local var for faster lookup
-                sStart = elEditor[0].selectionStart,
-                sEnd = elEditor[0].selectionEnd,
+                selection = utils.getCaretPosition(elEditor),
+                sStart = selection.start,
+                sEnd = selection.end,
                 plain_text = elEditor.val();
             
             editorSelectionLength = sEnd - sStart;
@@ -374,8 +466,9 @@
                     return;
                 }
 
-                var sStart = elEditor[0].selectionStart,
-                    sEnd = elEditor[0].selectionEnd;
+                var selection = utils.getCaretPosition(elEditor),
+                    sStart = selection.start,
+                    sEnd = selection.end;
 
                 shiftTagsPosition(editorPasteStartPosition, sEnd - editorPasteStartPosition - editorPasteCutCharacters);
                 updateBeautifier();
@@ -383,11 +476,11 @@
         }
         
         function onEditorInput (e) {
-            var selectionStartFix = $.browser.webkit ? 0 : -1;
             if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
                 if (editorSelectionLength > 0) {
                     // delete of selection occured
-                    var sStart = elEditor[0].selectionStart + selectionStartFix,
+                    var selection = utils.getCaretPosition(elEditor),
+                        sStart = selection.start,
                         selectionLength = editorSelectionLength,
                         sEnd = sStart + selectionLength,
                         tags_shift_positions = elEditor.val().length - editorTextLength;
@@ -395,8 +488,9 @@
                     shiftTagsPosition(sEnd, tags_shift_positions);
                 } else if (!editorInPasteMode) {
                     // char input - shift with 1
-                    var sStart = elEditor[0].selectionStart + selectionStartFix,
-                        sEnd = elEditor[0].selectionEnd + selectionStartFix,
+                    var selection = utils.getCaretPosition(elEditor),
+                        sStart = selection.start,
+                        sEnd = selection.end,
                         selectionLength = sEnd - sStart;
 
                     if (editorKeyCode == KEY.RETURN) {
@@ -458,7 +552,7 @@
                 objPropTransformer = transformObjectProperties(trigger.keys_map),
                 localTag = objPropTransformer(tag, false),
                 plain_text = getEditorValue(),
-                sStart = elEditor[0].selectionStart,
+                sStart = utils.getCaretPosition(elEditor).start,
                 tagStart = sStart - currentTriggerChar.length - currentDataQuery.length,
                 newCaretPosition = tagStart + localTag.title.length,
                 left_text = plain_text.substr(0, tagStart),
@@ -482,7 +576,7 @@
             updateBeautifier();
 
             elEditor.focus();
-            utils.setCaratPosition(elEditor[0], newCaretPosition);
+            utils.setCaretPosition(elEditor, newCaretPosition);
             
             elEditor.trigger('tagsAdded.textntags', [[tag]]);
         }
@@ -501,6 +595,8 @@
         function populateTagList (query, triggerChar, results) {
             var trigger = settings.triggers[triggerChar];
             
+            updateBeautifier();
+
             if (trigger.uniqueTags) {
                 // Filter items that has already been mentioned
                 var id_key = trigger.keys_map.id, tagIds = _.map(tagsCollection, function (tagPos) { return tagPos[3][id_key]; });
