@@ -159,7 +159,7 @@
         
         function getBeautifiedText (tagged_text) {
             var beautified_text = tagged_text || getTaggedText();
-
+	    beautified_text = beautified_text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
             _.each(settings.triggers, function (trigger) {
                 var markup = templates.tagHighlight({idx: trigger.parserGroups.title, class_name: trigger.classes.tagHighlight});
                 beautified_text = beautified_text.replace(trigger.parser, markup);
