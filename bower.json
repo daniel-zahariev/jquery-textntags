@@ -1,0 +1,23 @@
+{
+  "name": "jquery-textntags",
+  "main": ["jquery-textntags.js",
+    "jquery-textntags.css"],
+  "version": "0.1.2",
+  "homepage": "http://daniel-zahariev.github.io/jquery-textntags",
+  "authors": [
+    "wallace7souza <wallace.c.souza@gmail.com>"
+  ],
+  "description": "jquery plugin for tag text",
+  "keywords": [
+    "jquery",
+    "tag"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
