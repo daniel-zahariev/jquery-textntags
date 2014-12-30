@@ -241,7 +241,7 @@
         function checkForTrigger(look_ahead) {
             look_ahead = look_ahead || 0;
             
-            var selectionStartFix = $.browser.webkit ? 0 : -1,
+            var selectionStartFix = ('WebkitAppearance' in document.documentElement.style) ? 0 : -1,
                 sStart = elEditor[0].selectionStart + selectionStartFix,
                 left_text = elEditor.val().substr(0, sStart + look_ahead),
                 found_trigger, found_trigger_char = null, query;
@@ -383,7 +383,7 @@
         }
         
         function onEditorInput (e) {
-            var selectionStartFix = $.browser.webkit ? 0 : -1;
+            var selectionStartFix = ('WebkitAppearance' in document.documentElement.style) ? 0 : -1;
             if (editorKeyCode != KEY.BACKSPACE && editorKeyCode != KEY['DELETE']) {
                 if (editorSelectionLength > 0) {
                     // delete of selection occured
